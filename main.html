@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<body>
+<link rel="stylesheet" type="text/css" src="iso_style.css" />
+<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+<script type="text/javascript" src="jquery-1.8.2.js"></script>
+<script type="text/javascript">
+	var width = 500;
+	var height = 500;
+	
+//	var vertex = [{"name":"a"}, {"name":"b"},
+//	{"name":"c"},	{"name":"d"}, {"name":"e"},{"name":"a2"}, {"name":"b2"},
+//	{"name":"c2"},	{"name":"d2"}, {"name":"e2"}];
+	
+//	var edge = [{"from":"a","to":"b"}];
+
+	/*
+		Graph Notation and Documentation:
+		The graph will be given in the ADJACENCY LIST format.
+		Format: an ARRAY of Vertex OBJECTS which contain the following characteristics:
+			name -- STRING, the name of the vertex.
+			edges -- an ARRAY of Edge OBJECTS, each of which contains:
+				to -- the Vertex NAME that this edge leads to,
+				weight -- DOUBLE, the weight of this edge.
+	*/
+	function Vertex(n){
+		this.name = n;
+		this.edges = new Array();
+	}
+	function Edge(f, t, w){
+		this.from = f;
+		this.to = t;
+		this.weight = w;
+	}
+	var graph = [];
+
+	
+	function completeGraphPosition(angle){
+		var direction = [Math.cos(angle), Math.sin(angle)];
+		var xMag = width/2;
+		var yMag = height/2;
+		var ret = [(direction[0]*(xMag-10))+(xMag), (direction[1]*(yMag-10))+(yMag)];
+		console.log(ret);
+		return ret;
+	}
+	
+	//calculateEdge: a d3 method for positioning an edge correctly.
+	function calculateEdge(d, i){
+		console.log(d);
+		var from = new Array();
+		from.push(parseFloat(d3.select('#v'+d.from+" circle").attr("cx")));//fetch cx from the circle
+		from.push(parseFloat(d3.select('#v'+d.from+" circle").attr("cy")));
+		
+		var to = new Array();
+		to.push(parseFloat(d3.select('#v'+d.to+" circle").attr("cx")));
+		to.push(parseFloat(d3.select('#v'+d.to+" circle").attr("cy")));
+		var slope = [(to[0]-from[0]),(to[1]-from[1])];//vector notation
+		console.log(slope);
+		var slopeLength = Math.sqrt( (slope[0]*slope[0])+(slope[1]*slope[1]) );
+		console.log(slopeLength);
+		var unitSlope = [slope[0]/slopeLength , slope[1]/slopeLength];
+		console.log(unitSlope);
+		// Now, what the hell are we doing? Calculating a unit vector
+		// in order to chop off enough of the line so that it doesn't
+		// intersect with the vertex (circle)
+		from[0] += unitSlope[0] * d3.select('#v'+d.from+" circle").attr("r");
+		from[1] += unitSlope[1] * d3.select('#v'+d.from+" circle").attr("r");
+		to[0]   -= unitSlope[0] * d3.select('#v'+d.to+" circle").attr("r");
+		to[1]   -= unitSlope[1] * d3.select('#v'+d.to+" circle").attr("r");
+		// this, in context, is the line element being appended. I hope.
+		d3.select(this).attr("x1", from[0]).attr("y1",from[1])
+		.attr("x2", to[0]).attr("y2", to[1]).attr("stroke","black")
+		.classed("e"+d.from, true);
+	}
+	
+	function calculateTruePosition(d, i){
+	
+	
+	}
+	
+	
+	$(document).ready(function(){
+		height = $(window).height()-20;
+		width = $(window).width()-20;
+		//alert("in");
+		var svg = d3.select("svg").attr("width", width).attr("height", height).append("g");
+	
+		for(i=0; i<10; i++){
+			var v = new Vertex(i+"");
+			for(j=1; j<10; j++){
+				v.edges.push(new Edge(i+"", ((i+j) % 10)+"", 0));
+			}
+			graph.push(v);
+		}
+		
+		svg.selectAll("circle").data(graph).enter().append("g").attr("id",function(d){return "v"+d.name}).each(function(d,i){
+			////Make vertices
+			var ind = i;
+			d3.select(this).append("circle")
+			.attr("cx", function(d){
+			return completeGraphPosition( 2*Math.PI*(ind/graph.length) )[0];})
+			.attr("cy", function(d){
+			return completeGraphPosition( 2*Math.PI*(ind/graph.length) )[1];})
+			.attr("r", 10).attr("fill", "steelblue");
+			////Make labels for those vertices. Pretty lame right now.
+			d3.select(this).append("text")
+			.attr("x", function(d){
+			return completeGraphPosition( 2*Math.PI*(ind/graph.length) )[0]-4;})
+			.attr("y", function(d){
+			return completeGraphPosition( 2*Math.PI*(ind/graph.length) )[1]+5;})
+			.text(function(d){return d.name;});
+		});
+		
+		//d3.select('#v2').attr("transform", "translate(-330,-330)");
+		
+		for(i=0; i<graph.length; i++){
+			var vert = graph[i];
+			console.log(vert);
+			var enEdge = svg.selectAll("line .e"+vert.name)
+			.data(vert.edges)
+			.enter();
+			
+			enEdge.append("line").each(calculateEdge);
+		}
+		
+		// var enEdge = svg.selectAll("line").data(edge).enter();
+		
+		// enEdge.append("line")
+		////Use id selection to get positions of vertices --> set appropriate SVG traits
+		// .attr("x1", function(d){return svg.select("#"+d.from).attr("cx")})
+		// .attr("y1", function(d){return svg.select("#"+d.from).attr("cy")})
+		// .attr("x2", function(d){return svg.select("#"+d.to).attr("cx")})
+		// .attr("y2", function(d){return svg.select("#"+d.to).attr("cy")})
+		// .attr("stroke", "black");
+	});
+</script>
+<svg></svg>
+</body>
+</html>
