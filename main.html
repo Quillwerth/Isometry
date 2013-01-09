@@ -2,7 +2,7 @@
 <html>
 <body>
 <link rel="stylesheet" type="text/css" src="iso_style.css" />
-<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+<script type="text/javascript" src="d3.v3.min.js"></script>
 <script type="text/javascript" src="jquery-1.8.2.js"></script>
 <script type="text/javascript">
 	var width = 500;
@@ -46,14 +46,14 @@
 	
 	//calculateEdge: a d3 method for positioning an edge correctly.
 	function calculateEdge(d, i){
-		console.log(d);
-		var from = new Array();
-		from.push(parseFloat(d3.select('#v'+d.from+" circle").attr("cx")));//fetch cx from the circle
-		from.push(parseFloat(d3.select('#v'+d.from+" circle").attr("cy")));
+		//console.log(d);
+		var from = calculateTrueVertexPosition(d.from);
+		// from.push(parseFloat(d3.select('#v'+d.from+" circle").attr("cx")));//fetch cx from the circle
+		// from.push(parseFloat(d3.select('#v'+d.from+" circle").attr("cy")));
 		
-		var to = new Array();
-		to.push(parseFloat(d3.select('#v'+d.to+" circle").attr("cx")));
-		to.push(parseFloat(d3.select('#v'+d.to+" circle").attr("cy")));
+		var to = calculateTrueVertexPosition(d.to);
+		// to.push(parseFloat(d3.select('#v'+d.to+" circle").attr("cx")));
+		// to.push(parseFloat(d3.select('#v'+d.to+" circle").attr("cy")));
 		var slope = [(to[0]-from[0]),(to[1]-from[1])];//vector notation
 		console.log(slope);
 		var slopeLength = Math.sqrt( (slope[0]*slope[0])+(slope[1]*slope[1]) );
@@ -73,9 +73,22 @@
 		.classed("e"+d.from, true);
 	}
 	
-	function calculateTruePosition(d, i){
-	
-	
+	//Includes the translation of the <g> surrounding the vertex.
+	function calculateTrueVertexPosition(vertName){
+		var transLine = d3.select("#v"+vertName).attr("transform");
+		var translateRegExp = /translate\(-?\d+,-?\d+\)/ig;
+		var translation = [0, 0];
+		if(translateRegExp.test(transLine)){
+			console.log("translation detected!");
+			var transStatement = transLine.match(translateRegExp);
+			console.log(transStatement);
+			var numbersRegExp = /-?\d+/g;
+			var numbers = transStatement[0].match(numbersRegExp);
+			translation[0] = numbers[0];
+			translation[1] = numbers[1];
+			console.log(translation);
+		}
+		return [parseFloat(d3.select('#v'+vertName+" circle").attr("cx"))+parseFloat(translation[0]), parseFloat(d3.select('#v'+vertName+" circle").attr("cy"))+parseFloat(translation[1])];	
 	}
 	
 	
@@ -111,7 +124,7 @@
 			.text(function(d){return d.name;});
 		});
 		
-		//d3.select('#v2').attr("transform", "translate(-330,-330)");
+		d3.select('#v2').attr("transform", "translate(-330,-30)");
 		
 		for(i=0; i<graph.length; i++){
 			var vert = graph[i];
