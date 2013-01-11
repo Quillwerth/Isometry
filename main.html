@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <body>
-<link rel="stylesheet" type="text/css" src="iso_style.css" />
+<link rel="stylesheet" type="text/css" href="iso_style.css" />
 <script type="text/javascript" src="d3.v3.min.js"></script>
 <script type="text/javascript" src="jquery-1.8.2.js"></script>
 <script type="text/javascript" src="draw_position.js"></script>
@@ -21,12 +21,18 @@
 		for(i=0; i<10; i++){
 			var v = new Vertex(i+"");
 			for(j=1; j<10; j++){
-				v.edges.push(new Edge(i+"", ((i+j) % 10)+"", 0));
+				v.edges.push(new Edge(i+"", ((i+j) % 100)+"", 0));
 			}
 			graph.push(v);
 		}
 		
-		svg.selectAll("circle").data(graph).enter().append("g").attr("id",function(d){return "v"+d.name}).each(function(d,i){
+		var graphIn = svg.selectAll("circle").data(graph);
+
+		//ENTER
+		graphIn.enter().append("g").attr("id",function(d){return "v"+d.name});
+		
+		//UPDATE
+		graphIn.each(function(d,i){
 			////Make vertices
 			var ind = i;
 			d3.select(this).append("circle")
@@ -34,7 +40,7 @@
 			return completeGraphPosition( 2*Math.PI*(ind/graph.length) )[0];})
 			.attr("cy", function(d){
 			return completeGraphPosition( 2*Math.PI*(ind/graph.length) )[1];})
-			.attr("r", 10).attr("fill", "steelblue");
+			.attr("r", 10);
 			////Make labels for those vertices. Pretty lame right now.
 			d3.select(this).append("text")
 			.attr("x", function(d){
@@ -43,30 +49,29 @@
 			return completeGraphPosition( 2*Math.PI*(ind/graph.length) )[1]+5;})
 			.text(function(d){return d.name;});
 		});
-		
-		d3.select('#v2').attr("transform", "translate(-330,-310)");
+
+
+
+		//d3.select('#v2').attr("transform", "translate(-330,-10)");
 		
 		for(i=0; i<graph.length; i++){
 			var vert = graph[i];
 			console.log(vert);
-			var enEdge = svg.selectAll("line .e"+vert.name)
-			.data(vert.edges)
-			.enter();
+			var edgeSet = svg.selectAll("line .e"+vert.name)
+			.data(vert.edges);
 			
-			enEdge.append("line").each(calculateEdge);
+			edgeSet.enter().append("line");
+			edgeSet.each(calculateEdge);
 		}
-		
-		// var enEdge = svg.selectAll("line").data(edge).enter();
-		
-		// enEdge.append("line")
-		////Use id selection to get positions of vertices --> set appropriate SVG traits
-		// .attr("x1", function(d){return svg.select("#"+d.from).attr("cx")})
-		// .attr("y1", function(d){return svg.select("#"+d.from).attr("cy")})
-		// .attr("x2", function(d){return svg.select("#"+d.to).attr("cx")})
-		// .attr("y2", function(d){return svg.select("#"+d.to).attr("cy")})
-		// .attr("stroke", "black");
+
+		//EXIT
+		graphIn.exit().each(function(d){d3.selectAll("line .e"+d.name).remove()}).remove();//Remove all edges leading to/from vertex before removing vertex
+
 	});
+
+	
 </script>
 <svg></svg>
+<textarea id="input"></textarea>
 </body>
 </html>

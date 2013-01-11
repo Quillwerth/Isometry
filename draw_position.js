@@ -35,8 +35,7 @@
 		to[1]   -= unitSlope[1] * d3.select('#v'+d.to+" circle").attr("r");
 		// this, in context, is the line element being appended. I hope.
 		d3.select(this).attr("x1", from[0]).attr("y1",from[1])
-		.attr("x2", to[0]).attr("y2", to[1]).attr("stroke","black")
-		.classed("e"+d.from, true);
+		.attr("x2", to[0]).attr("y2", to[1]).classed("e"+d.from, true).classed("e"+d.to, true);
 	}
 	
 	//Includes the translation of the <g> surrounding the vertex.

@@ -1,4 +1,8 @@
-svg circle{
-	fill: "steelblue";
-	stroke: "steelblue";
+circle {
+	fill: steelblue;
+	stroke: black;
+}
+
+line {
+	stroke: black;
 }
