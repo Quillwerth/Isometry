@@ -13,15 +13,6 @@
 	function Vertex(n){
 		this.name = n;
 		this.edges = new Array();
-		this.fqn = function(){
-			var strBuild = new Array();
-			strBuild.push(n);
-			for(i=0; i<this.edges.length; i++){
-				strBuild.push(this.edges[i].to);
-				strBuild.push(this.edges[i].weight);				
-			}
-			return strBuild.join("");
-		}
 	}
 	function Edge(f, t, w){
 		this.from = f;
