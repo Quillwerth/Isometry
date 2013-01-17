@@ -23,10 +23,10 @@
 		// Now, what the hell are we doing? Calculating a unit vector
 		// in order to chop off enough of the line so that it doesn't
 		// intersect with the vertex (circle)
-		from[0] += (unitSlope[0] * d3.select('#v'+d.from+" circle").attr("r"))+2;
-		from[1] += (unitSlope[1] * d3.select('#v'+d.from+" circle").attr("r"))+2;
-		to[0]   -= (unitSlope[0] * d3.select('#v'+d.to+" circle").attr("r"))+2;
-		to[1]   -= (unitSlope[1] * d3.select('#v'+d.to+" circle").attr("r"))+2;
+		from[0] += unitSlope[0] * d3.select('#v'+d.from+" circle").attr("r");
+		from[1] += unitSlope[1] * d3.select('#v'+d.from+" circle").attr("r");
+		to[0]   -= unitSlope[0] * d3.select('#v'+d.to+" circle").attr("r");
+		to[1]   -= unitSlope[1] * d3.select('#v'+d.to+" circle").attr("r");
 
 		//Now, to draw the arrowhead: calculate orthogonal line,
 		//position desired distance from end point
