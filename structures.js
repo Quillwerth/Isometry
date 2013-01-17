@@ -13,7 +13,7 @@
 	function Vertex(n){
 		this.name = n;
 		this.edges = new Array();
-		this.fqn = function(){
+		this.fqn = function(){//fully qualified name -- allows you to see if the vertex has changed at all.
 			var strBuild = new Array();
 			strBuild.push(n);
 			for(i=0; i<this.edges.length; i++){

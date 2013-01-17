@@ -34,7 +34,8 @@
 		graph.push(new Vertex("4"));
 		
 		function redraw(){
-			var graphIn = svg.selectAll("g .vertex").data(graph, function(d){return d.fqn();});
+			var graphIn = svg.selectAll("g .vertex").data(graph, function(d){return d.name + graph.length;});
+			//Why that key function: Because its not relevant to positioning whether the edges have changed or not.
 			console.log(graph);
 			//ENTER
 			graphIn.enter().append("g").classed("vertex", true)
@@ -69,19 +70,26 @@
 			var edgeSet = svg.selectAll(".edge")
 			.data(allEdges, function(d){return [d.from,d.to,d.weight].join("");});
 				
-			edgeSet.enter().append("line")
-			.each(function(d){console.log(["enter:",d.from,d.to,d.weight].join(" "));});
-				
+			var edgeEnter = edgeSet.enter().append("g");
+			//.each(function(d){console.log(["enter:",d.from,d.to,d.weight].join(" "));});
+
+			//Parts of the arrow, labelled for control in calculateEdge
+			edgeEnter.append("line").classed("shaft",true);
+			edgeEnter.append("line").classed("rightArrow",true);
+			edgeEnter.append("line").classed("leftArrow",true);
+
+
 			edgeSet.each(calculateEdge);
 				
 			edgeSet.exit()
-			.each(function(d){console.log(["exit:",d.from,d.to,d.weight].join(" "));})
+			//.each(function(d){console.log(["exit:",d.from,d.to,d.weight].join(" "));})
 			.remove();
 
 			//EXIT
 			graphIn.exit().each(function(d){d3.selectAll(".e"+d.name).remove();}).remove();//Remove all edges leading to/from vertex before removing vertex
 		}
 		redraw();
+
 		$('#submitInput').click(function(e){
 			graph = parseGraphInput($('#input')[0].value);
 			redraw();
