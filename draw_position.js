@@ -46,6 +46,38 @@
 		d3.select(this).select(".rightArrow").attr("x1", to[0]).attr("y1",to[1])
 		.attr("x2", rightArrowEnd[0]).attr("y2", rightArrowEnd[1]);
 	}
+
+	//shiftDoubleEdges: shifts 1-vertex cycles so you can see both vertices.
+	//  Vertex A has an edge to B, which has an edge to A. This algorithm detects those,
+	//  and shifts them so both are visible.
+	//  MUTATES EDGE CODE NUMBERS.
+	function shiftDoubleEdges(selection){
+		resetGraphCodes();
+		var up = new Array();
+		var down = new Array();
+		selection.each(function(d){//d = each vertex once.
+			for(i=0; i<d.edges.length; i++){
+				var edge = d.edges[i];
+				console.log(["On edge:",edge.from,edge.to,edge.weight].join(" "));
+				if(edge.code!==1){
+					var filteredEdges = d3.selectAll('.e'+edge.from).filter('.e'+edge.to);
+					if(filteredEdges[0].length > 1){
+						//This line assumes does not support multigraphs.
+						//You should feel bad if you're using a multigraph anyway.
+						filteredEdges.data()[0].code = 1;
+						filteredEdges.data()[1].code = 1;//Magically changes the base Edge object! Woot woot!
+						up.push(filteredEdges[0][0]);//Do not ask
+						down.push(filteredEdges[0][1]);//how the sausage is made
+					}
+					edge.code = 1;
+				}
+			}
+		});
+		console.log("Out of each");
+		console.log(up);
+		d3.selectAll(up).attr("transform", "translate(-5,-5)");
+		d3.selectAll(down).attr("transform","translate(5,5)");
+	}
 	
 	//Finds the position of a vertex in the <svg>. Includes the translation of the <g> surrounding the vertex.
 	function calculateTrueVertexPosition(vertName){

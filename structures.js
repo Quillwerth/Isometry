@@ -22,10 +22,25 @@
 			}
 			return strBuild.join("");
 		}
+		this.resetCodes = function(){
+			for(j = 0; j<this.edges.length; j++){
+				console.log("on edge"+this.edges[j]);
+				this.edges[j].code=0;
+			}
+		}
 	}
+
 	function Edge(f, t, w){
 		this.from = f;
 		this.to = t;
 		this.weight = w;
+		this.code = 0;//code: an algorithm-specific data code. Highly volatile.
 	}
 	var graph = [];
+
+	function resetGraphCodes(){
+		for(i = 0; i<graph.length; i++){
+			console.log("on vertex:"+graph[i].name);
+			graph[i].resetCodes();
+		}
+	}

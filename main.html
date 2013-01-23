@@ -67,7 +67,7 @@
 				allEdges = allEdges.concat(d.edges);
 			});
 			
-			var edgeSet = svg.selectAll(".edge")
+			var edgeSet = svg.selectAll(".edge")//.edge is the class of the "g" around each edge
 			.data(allEdges, function(d){return [d.from,d.to,d.weight].join("");});
 				
 			var edgeEnter = edgeSet.enter().append("g");
@@ -78,8 +78,10 @@
 			edgeEnter.append("line").classed("rightArrow",true);
 			edgeEnter.append("line").classed("leftArrow",true);
 
-
+			//resetGraphCodes();
 			edgeSet.each(calculateEdge);
+			//Fix double edges:
+			graphIn.call(shiftDoubleEdges);
 				
 			edgeSet.exit()
 			//.each(function(d){console.log(["exit:",d.from,d.to,d.weight].join(" "));})
