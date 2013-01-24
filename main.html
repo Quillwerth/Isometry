@@ -29,9 +29,11 @@
 //			graph.push(v);
 //		}
 		var v = new Vertex("a");
-		v.edges.push(new Edge("a", "4", 3));
+		v.edges.push(new Edge("a", "b", 3));
 		graph.push(v);
-		graph.push(new Vertex("4"));
+		v = new Vertex("b");
+		v.edges.push(new Edge("b","a",2));
+		graph.push(v);
 		
 		function redraw(){
 			var graphIn = svg.selectAll("g .vertex").data(graph, function(d){return d.name + graph.length;});

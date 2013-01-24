@@ -28,6 +28,10 @@
 				this.edges[j].code=0;
 			}
 		}
+		//addEdge -- Syntactic sugar for pushing edges.
+		this.addEdge = function(to, weight){
+			this.edges.push(new Edge(this.name, to, weight));
+		}
 	}
 
 	function Edge(f, t, w){

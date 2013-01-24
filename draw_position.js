@@ -9,16 +9,25 @@
 		//console.log(ret);
 		return ret;
 	}
-	
+	//From & To: Array holding an (x,y) pair.
+	function getUnitSlope(from, to){
+		var slope = [(to[0]-from[0]),(to[1]-from[1])];//vector notation
+		var slopeLength = Math.sqrt( (slope[0]*slope[0])+(slope[1]*slope[1]) );
+		var unitSlope = [slope[0]/slopeLength , slope[1]/slopeLength];
+		return unitSlope;
+	}
+
+	function getOrthogonalUnitSlope(from, to){
+		var unitSlope = getUnitSlope(from, to);
+		var orthoSlope = [-1*unitSlope[1], unitSlope[0]];
+		return orthoSlope;
+	}
+
 	//calculateEdge: a d3 method for positioning an edge correctly.
 	function calculateEdge(d, i){
 		var from = calculateTrueVertexPosition(d.from);
 		var to = calculateTrueVertexPosition(d.to);
-		var slope = [(to[0]-from[0]),(to[1]-from[1])];//vector notation
-
-		var slopeLength = Math.sqrt( (slope[0]*slope[0])+(slope[1]*slope[1]) );
-
-		var unitSlope = [slope[0]/slopeLength , slope[1]/slopeLength];
+		unitSlope = getUnitSlope(from, to);
 
 		// Now, what the hell are we doing? Calculating a unit vector
 		// in order to chop off enough of the line so that it doesn't
@@ -33,7 +42,7 @@
 		//calculate the endpoint a given magnitude away
 		//and draw from the end point of the orthogonal line
 		//to the endpoint of the shaft.
-		var orthoSlope = [-1*unitSlope[1],unitSlope[0]];
+		var orthoSlope = getOrthogonalUnitSlope(from,to);
 		var crossDistance = [to[0] - (unitSlope[0]*4),to[1] - (unitSlope[1]*4)];//Location that the ortho-line crosses the shaft
 		var leftArrowEnd = [crossDistance[0]+(orthoSlope[0]*5), crossDistance[1]+(orthoSlope[1]*5)];
 		var rightArrowEnd = [crossDistance[0]-(orthoSlope[0]*5), crossDistance[1]-(orthoSlope[1]*5)];
@@ -73,10 +82,26 @@
 				}
 			}
 		});
-		console.log("Out of each");
-		console.log(up);
-		d3.selectAll(up).attr("transform", "translate(-5,-5)");
-		d3.selectAll(down).attr("transform","translate(5,5)");
+		d3.selectAll(up).each(function(d){
+			var curLine = d3.select(this); console.log(curLine.attr("x1"));
+			
+			var from = [curLine.select('.shaft').attr("x1"), curLine.select('.shaft').attr("y1")];
+			var to = [curLine.select('.shaft').attr("x2"), curLine.select('.shaft').attr("y2")];
+			var vector = getOrthogonalUnitSlope(from, to);
+			
+			var translationStatement = ["translate(",-5*vector[0],",",-5*vector[1],")"].join("");
+			curLine.attr("transform", translationStatement);
+		});
+		d3.selectAll(down).each(function(d){
+			var curLine = d3.select(this);
+			
+			var from = [curLine.select('.shaft').attr("x1"), curLine.select('.shaft').attr("y1")];
+			var to = [curLine.select('.shaft').attr("x2"), curLine.select('.shaft').attr("y2")];
+			var vector = getOrthogonalUnitSlope(from, to);
+			
+			var translationStatement = ["translate(",-5*vector[0],",",-5*vector[1],")"].join("");
+			curLine.attr("transform", translationStatement);
+		});
 	}
 	
 	//Finds the position of a vertex in the <svg>. Includes the translation of the <g> surrounding the vertex.
