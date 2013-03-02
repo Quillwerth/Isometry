@@ -25,8 +25,14 @@
 
 	//calculateEdge: a d3 method for positioning an edge correctly.
 	function calculateEdge(d, i){
+
+		console.log("Calculating edge: "+d.returnKey());
+		console.log([d.from,d.to].join(","));
 		var from = calculateTrueVertexPosition(d.from);
 		var to = calculateTrueVertexPosition(d.to);
+
+		console.log([d.from," : ",from[0],from[1]].join(" "));
+		console.log([d.to," : ",to[0],to[1]].join(" "));
 		unitSlope = getUnitSlope(from, to);
 
 		// Now, what the hell are we doing? Calculating a unit vector
@@ -67,11 +73,11 @@
 		selection.each(function(d){//d = each vertex once.
 			for(i=0; i<d.edges.length; i++){
 				var edge = d.edges[i];
-				console.log(["On edge:",edge.from,edge.to,edge.weight].join(" "));
+				//console.log("on edge: "+edge.returnKey());
 				if(edge.code!==1){
 					var filteredEdges = d3.selectAll('.e'+edge.from).filter('.e'+edge.to);
 					if(filteredEdges[0].length > 1){
-						//This line assumes does not support multigraphs.
+						//This line does not support multigraphs.
 						//You should feel bad if you're using a multigraph anyway.
 						filteredEdges.data()[0].code = 1;
 						filteredEdges.data()[1].code = 1;//Magically changes the base Edge object! Woot woot!
@@ -107,17 +113,18 @@
 	//Finds the position of a vertex in the <svg>. Includes the translation of the <g> surrounding the vertex.
 	function calculateTrueVertexPosition(vertName){
 		var transLine = d3.select("#v"+vertName).attr("transform");
+		console.log("On "+vertName+" Found: "+transLine);
 		var translateRegExp = /translate\(-?\d+,-?\d+\)/ig;
 		var translation = [0, 0];
 		if(translateRegExp.test(transLine)){
-			//console.log("translation detected!");
+			console.log("translation detected!");
 			var transStatement = transLine.match(translateRegExp);
 			//console.log(transStatement);
 			var numbersRegExp = /-?\d+/g;
 			var numbers = transStatement[0].match(numbersRegExp);
 			translation[0] = numbers[0];
 			translation[1] = numbers[1];
-			//console.log(translation);
+			//console.log(vertName+" "+translation);
 		}
 		return [parseFloat(d3.select('#v'+vertName+" circle").attr("cx"))+parseFloat(translation[0]), parseFloat(d3.select('#v'+vertName+" circle").attr("cy"))+parseFloat(translation[1])];	
 	}

@@ -24,7 +24,7 @@
 		}
 		this.resetCodes = function(){
 			for(j = 0; j<this.edges.length; j++){
-				console.log("on edge"+this.edges[j]);
+				//console.log("on edge"+this.edges[j].returnKey());
 				this.edges[j].code=0;
 			}
 		}
@@ -39,12 +39,20 @@
 		this.to = t;
 		this.weight = w;
 		this.code = 0;//code: an algorithm-specific data code. Highly volatile.
+		this.shift = 0;
+		//vertexShift: Call this when a vertex is moved through user action. This way, it'll redraw the vertex.
+		this.vertexShift = function(){
+			this.shift = this.shift ^ 1;
+		}
+		this.returnKey = function(){
+			return [this.shift,this.to,this.from, this.weight].join("::");
+		}
 	}
 	var graph = [];
 
 	function resetGraphCodes(){
 		for(i = 0; i<graph.length; i++){
-			console.log("on vertex:"+graph[i].name);
+			//console.log("on vertex:"+graph[i].name);
 			graph[i].resetCodes();
 		}
 	}

@@ -1,6 +1,8 @@
 //Isometry -- Graph Theory Project
 //    input.js >> if it's user input, it goes in here.
-
+var dragStartX;
+var dragStartY;
+var draggedVert=null;
 
 function parseGraphInput(text){
 	//Graph input notation: <NAME>:(<TO>, W),...,(<TO>,W) <-- zero or more
@@ -30,3 +32,54 @@ function parseGraphInput(text){
 	}
 	return parsedGraph;
 }
+
+//dragBegin: OnClick, stores the XY coordinates of the mouse.
+function dragBegin(svg, vert){
+	var pos = d3.mouse(svg);
+	dragStartX = pos[0];
+	dragStartY = pos[1];
+	draggedVert = vert;
+	console.log(draggedVert);
+}
+
+function dragVertex(svg){
+	//Calculate the displacement from where the vertex would be if there were no translate()
+	//You're replacing the translate anyway, so don't worry about it.
+	if (draggedVert===null){return false;}
+	var vertName = d3.select(draggedVert).attr("id").substring(1);//Assumes id is form v[ACTUAL NAME]
+
+	var pos = d3.mouse(svg);
+	var curPos = new Array();
+	curPos[0] = d3.select(draggedVert).select("circle").attr("cx");
+	curPos[1] = d3.select(draggedVert).select("circle").attr("cy");
+	var newPos = new Array();
+	newPos.push(pos[0]-curPos[0]);
+	newPos.push(pos[1]-curPos[1]);
+	d3.select(draggedVert).attr("transform", "translate("+parseInt(newPos[0])+","+parseInt(newPos[1])+")");
+	//Let all the relevant edges know the vertex has shifted
+	console.log("size of edge array for vertex: "+d3.selectAll(".e"+vertName).length);
+	console.log(d3.selectAll(".e"+vertName));
+	d3.selectAll(".e"+vertName).each(function(d){d.vertexShift();});
+	draggedVert = null;
+	return true;
+}
+
+
+
+
+
+// function calculateCurrentTranslation(){
+// 	var transLine = d3.select("#v"+vertName).attr("transform");
+// 	var translateRegExp = /translate\(-?\d+,-?\d+\)/ig;
+// 	var translation = [0, 0];
+// 	if(translateRegExp.test(transLine)){
+// 		//console.log("translation detected!");
+// 		var transStatement = transLine.match(translateRegExp);
+// 		//console.log(transStatement);
+// 		var numbersRegExp = /-?\d+/g;
+// 		var numbers = transStatement[0].match(numbersRegExp);
+// 		translation[0] = numbers[0];
+// 		translation[1] = numbers[1];
+// 	}
+// 	return translation;
+// }
