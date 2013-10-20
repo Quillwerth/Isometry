@@ -23,6 +23,12 @@
 		return orthoSlope;
 	}
 
+	function getDistance(from, to){
+		var slope = [(to[0]-from[0]),(to[1]-from[1])];//vector notation
+		var slopeLength = Math.sqrt( (slope[0]*slope[0])+(slope[1]*slope[1]) );
+		return slopeLength;
+	}
+
 	//calculateEdge: a d3 method for positioning an edge correctly.
 	function calculateEdge(d, i){
 
@@ -56,6 +62,11 @@
 		d3.select(this).classed("edge",true).classed("e"+d.from, true).classed("e"+d.to, true);
 		d3.select(this).select(".shaft").attr("x1", from[0]).attr("y1",from[1])
 		.attr("x2", to[0]).attr("y2", to[1]);
+		
+		d3.select(this).select(".edgeWeight")
+		.attr("x",(to[0] - (0.2 * getDistance(from, to)* unitSlope[0]))).attr("y",(to[1] - (0.2 * getDistance(from, to) * unitSlope[1])))
+		.text(function(d){return d.weight;});
+
 		d3.select(this).select(".leftArrow").attr("x1", to[0]).attr("y1",to[1])
 		.attr("x2", leftArrowEnd[0]).attr("y2", leftArrowEnd[1]);
 		d3.select(this).select(".rightArrow").attr("x1", to[0]).attr("y1",to[1])

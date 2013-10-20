@@ -13,21 +13,13 @@
 	var width = 500;
 	var height = 500;
 	
-//	var edge = [{"from":"a","to":"b"}];
 	
 	$(document).ready(function(){
 		height = $(window).height()-20;
 		width = $(window).width()-20;
 		//alert("in");
 		var svg = d3.select("svg").attr("width", width).attr("height", height); //.append("g");
-	
-//		for(i=0; i<3; i++){
-//			var v = new Vertex(i+"");
-//			for(j=1; j<3; j++){
-//				v.edges.push(new Edge(i+"", ((i+j) % 3)+"", 0));
-//			}
-//			graph.push(v);
-//		}
+
 		var v = new Vertex("a");
 		v.edges.push(new Edge("a", "b", 3));
 		graph.push(v);
@@ -44,7 +36,8 @@
 			.attr("id",function(d){console.log("creating "+d.name);return "v"+d.name;})
 			.each(function(d){
 				d3.select(this).append("circle");
-				d3.select(this).append("text");});
+				d3.select(this).append("text");
+			});
 			
 			//UPDATE
 			graphIn.each(function(d,i){
@@ -64,7 +57,6 @@
 				return completeGraphPosition( 2*Math.PI*(ind/graph.length) )[1]+5;})
 				.text(function(d){return d.name;});
 			});
-			//Set click controls:
 
 
 
@@ -84,6 +76,7 @@
 			edgeEnter.append("line").classed("shaft",true);
 			edgeEnter.append("line").classed("rightArrow",true);
 			edgeEnter.append("line").classed("leftArrow",true);
+			edgeEnter.append("text").classed("edgeWeight",true);
 
 			//resetGraphCodes();
 			edgeSet.each(calculateEdge);
@@ -97,11 +90,20 @@
 			//EXIT
 			graphIn.exit().each(function(d){d3.selectAll(".e"+d.name).remove();}).remove();//Remove all edges leading to/from vertex before removing vertex
 
+			//Set click controls:
+
+			d3.select("body").on("keydown", function(){ InputService.keyDown(d3.event);}
+				);
+			d3.select("body").on("keyup", function(){InputService.keyUp(d3.event);}
+				);
 
 			//console.log(svg.select("#drawArea"));
-			svg.selectAll(".vertex").on("mousedown", function(){console.log("mousedown detected");dragBegin($("#drawArea")[0],this);});//This unbelievably hackish solution brought to you by d3.js selections that refuse to return the DOM element.
+			svg.selectAll(".vertex").on("mousedown", function(){console.log("vertex mousedown detected");InputService.mouseDownOnVertex($("#drawArea")[0],this);});//This unbelievably hackish solution brought to you by d3.js selections that refuse to return the DOM element.
+			svg.selectAll(".vertex").on("mouseclick", function(){console.log("mouseclick detected"); InputService.mouseClickOnVertex($("#drawArea")[0],this);});
+
+
 			svg.on("mouseup",function(){console.log("mouseup detected");
-				if(dragVertex($("#drawArea")[0])){ 
+				if(InputService.mouseUpOnSVG($("#drawArea")[0])){ 
 					redraw();
 				}
 			});

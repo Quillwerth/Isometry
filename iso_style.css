@@ -6,3 +6,7 @@ circle {
 line {
 	stroke: black;
 }
+
+.selectedVertex circle{
+	fill: green;
+}
