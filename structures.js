@@ -12,6 +12,7 @@
 	*/
 	function Vertex(n){
 		this.name = n;
+		this.code = -1;
 		this.edges = new Array();
 		this.fqn = function(){//fully qualified name -- allows you to see if the vertex has changed at all.
 			var strBuild = new Array();
@@ -36,7 +37,21 @@
 
 	function Edge(f, t, w){
 		this.from = f;
+		this.fromVert = (function(){
+			for(var i = 0; i<graph.length; i++){
+				if(f === graph[i].name){
+					return graph[i];
+				}
+			}
+		})();
 		this.to = t;
+		this.toVert = (function(){
+			for(var i = 0; i<graph.length; i++){
+				if(t === graph[i].name){
+					return graph[i];
+				}
+			}
+		})();
 		this.weight = w;
 		this.code = 0;//code: an algorithm-specific data code. Highly volatile.
 		this.shift = 0;
@@ -55,4 +70,29 @@
 			//console.log("on vertex:"+graph[i].name);
 			graph[i].resetCodes();
 		}
+	}
+
+	function edgeFixer(){
+		//i live in hell
+		for(i = 0; i<graph.length; i++){
+			var newEdges = new Array();
+			for(j = 0; j<graph[i].edges.length; j++){
+				graph[i].edges[j].fromVert = (function(){
+					for(var k = 0; k<graph.length; k++){
+						if(graph[i].edges.from === graph[k].name){
+							return graph[k];
+						}
+					}
+				})();
+				graph[i].edges[j].toVert = (function(){
+					for(var k = 0; k<graph.length; k++){
+						if(graph[i].edges.to === graph[k].name){
+							return graph[k];
+						}
+					}
+				})();
+			}
+			// graph[i].edges = newEdges;
+		}
+		//Why? WHY?! Because I'm collecting technical debt. weeeeeeeeeeee
 	}

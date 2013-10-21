@@ -32,13 +32,13 @@
 	//calculateEdge: a d3 method for positioning an edge correctly.
 	function calculateEdge(d, i){
 
-		console.log("Calculating edge: "+d.returnKey());
-		console.log([d.from,d.to].join(","));
+		// console.log("Calculating edge: "+d.returnKey());
+		// console.log([d.from,d.to].join(","));
 		var from = calculateTrueVertexPosition(d.from);
 		var to = calculateTrueVertexPosition(d.to);
 
-		console.log([d.from," : ",from[0],from[1]].join(" "));
-		console.log([d.to," : ",to[0],to[1]].join(" "));
+		// console.log([d.from," : ",from[0],from[1]].join(" "));
+		// console.log([d.to," : ",to[0],to[1]].join(" "));
 		unitSlope = getUnitSlope(from, to);
 
 		// Now, what the hell are we doing? Calculating a unit vector
@@ -124,7 +124,7 @@
 	//Finds the position of a vertex in the <svg>. Includes the translation of the <g> surrounding the vertex.
 	function calculateTrueVertexPosition(vertName){
 		var transLine = d3.select("#v"+vertName).attr("transform");
-		console.log("On "+vertName+" Found: "+transLine);
+		// console.log("On "+vertName+" Found: "+transLine);
 		var translateRegExp = /translate\(-?\d+,-?\d+\)/ig;
 		var translation = [0, 0];
 		if(translateRegExp.test(transLine)){

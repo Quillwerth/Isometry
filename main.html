@@ -9,6 +9,7 @@
 <script type="text/javascript" src="draw_position.js"></script>
 <script type="text/javascript" src="structures.js"></script>
 <script type="text/javascript" src="input.js"></script>
+<script type="text/javascript" src="algorithms.js"></script>
 <script type="text/javascript">
 	var width = 500;
 	var height = 500;
@@ -55,7 +56,7 @@
 				return completeGraphPosition( 2*Math.PI*(ind/graph.length) )[0]-4;})
 				.attr("y", function(d){
 				return completeGraphPosition( 2*Math.PI*(ind/graph.length) )[1]+5;})
-				.text(function(d){return d.name;});
+				.text(function(d){if(d.code !== -1){return d.code;}else{return d.name;}});
 			});
 
 
@@ -92,8 +93,9 @@
 
 			//Set click controls:
 
-			d3.select("body").on("keydown", function(){ InputService.keyDown(d3.event);}
-				);
+			d3.select("body").on("keydown", function(){ if(InputService.keyDown(d3.event)){
+				redraw();
+			}});
 			d3.select("body").on("keyup", function(){InputService.keyUp(d3.event);}
 				);
 
@@ -112,13 +114,23 @@
 
 		$('#submitInput').click(function(e){
 			graph = parseGraphInput($('#input')[0].value);
+			// edgeFixer();
 			redraw();
+		});
+
+		$("#BFSButton").click(function(e){
+			Algorithms.BFS(d3.select(".selectedVertex").data()[0]);
+		});
+
+		$("resetButton").click(function(e){
+			Algorithms.clearCodes();
 		});
 	});
 
 	
 </script>
 <div id="drawArea"><svg></svg></div>
-<textarea id="input" rows="10" cols="90"></textarea><button id="submitInput" >Go!</button>
+<textarea id="input" rows="10" cols="90"></textarea><button id="submitInput" >Go!</button><button id="BFSButton" >BFS!</button><button id="resetButton" >Reset</button>
+<div id="selectedVertexInfo"></div>
 </body>
 </html>

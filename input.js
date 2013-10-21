@@ -38,6 +38,8 @@ function parseGraphInput(text){
 	var InputService = (function() {
 		//dragBegin: OnClick, stores the XY coordinates of the mouse.
 
+		var blockRepeat = false;
+
 		var ctrlDown = false;
 
 		var currentKey = -1;
@@ -68,15 +70,59 @@ function parseGraphInput(text){
 			}
 		}
 
+		//Returns true for "redraw necessary"
 		function keyDown(e){
 			// console.log("d3 keydown: "+e.keyCode);
 			if(e.keyCode === 17){
 				ctrlDown = true;
 				// console.log("ctrlDown is true");
 			}
+			else if(e.keyCode === 45 && !blockRepeat){//Insert
+				//adds new vertex
+				blockRepeat = true;
+				var alpha = new Array("a", "b", "c", "d", "e", "f", "g",
+		"h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
+		"u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G",
+		"H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
+		"U", "V", "W", "X", "Y", "Z");
+				for(var i = 0; i < alpha.length; i++){
+					var letter = alpha[i];
+					var foundLetter = false;
+					for(var j = 0; j < graph.length; j++){
+						var vert = graph[j];
+						if (vert.name === letter){
+							foundLetter = true; break;
+						}
+					}
+					if(foundLetter){
+						continue;
+					}else{
+						graph.push(new Vertex(letter));
+						break;
+					}
+				}
+				return true;
+			}
+			else if(e.keyCode === 46){
+				//Deletes all selected vertices
+				var verticesToRemove = d3.select(".selectedVertex").data();
+				console.log(verticesToRemove);
+				for(var i = 0; i < verticesToRemove.length; i++){
+					var vertex = verticesToRemove[i];
+					for(var j = 0; j < graph.length; j++){
+						if (vertex.name === graph[j].name){
+							//Remove
+							graph.splice(j, 1); 
+							break;
+						}
+					}
+				}
+				return true;
+			}
 			if(currentKey === -1){
 				currentKey = e.keyCode;
 			}
+			return false;
 		}
 
 		function keyUp(e){
@@ -85,6 +131,7 @@ function parseGraphInput(text){
 				ctrlDown = false;
 				// console.log("ctrlDown is false");
 			}
+			blockRepeat = false;
 			currentKey = -1;
 		}
 
@@ -128,7 +175,6 @@ function parseGraphInput(text){
 
 		////// SELECT VERTEX FUNCTIONS
 		function selectVertex(svg, vert){
-			d3.select(vert).classed("selectedVertex", true);
 			d3.select(vert).classed("selectedVertex", true);
 		}
 		function deselectVertex(svg, vert){
